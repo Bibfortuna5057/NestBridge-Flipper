@@ -9,7 +9,7 @@ The Flipper runs a custom FAP that broadcasts a BLE advertisement packet when yo
 ## Requirements
 
 - Flipper Zero (Momentum firmware recommended)
-- ESP32 development board with WiFi and BLE support running MicroPython — tested on Lonely Binary ESP32-S3
+- ESP32 development board with WiFi and BLE support running MicroPython — tested on [Lonely Binary ESP32-S3](https://a.co/d/0e6yDBgc)
 - Nest Gen 1 or Gen 2 thermostat running NoLongerEvil firmware
 - NLE API key with read and write scopes
 - WiFi network with internet access
