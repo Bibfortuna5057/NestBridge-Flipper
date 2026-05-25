@@ -18,7 +18,7 @@ The Flipper runs a custom FAP that broadcasts a BLE advertisement packet when yo
 
 - `nest_bridge.c` — Flipper FAP source, build with ufbt
 - `main.py` — MicroPython script for ESP32
-- `nest.fap` — Prebuilt FAP
+- `Nest.fap` — Prebuilt FAP
 
 ## Setup
 
@@ -37,7 +37,7 @@ The Flipper runs a custom FAP that broadcasts a BLE advertisement packet when yo
 ### Flipper
 
 **Option 1 — Use the prebuilt FAP (easiest)**
-1. Download `nest.fap` from this repo
+1. Download `Nest.fap` from this repo
 2. Copy it to your Flipper SD card under `apps/`
 
 **Option 2 — Build from source**
