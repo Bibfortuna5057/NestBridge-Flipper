@@ -24,15 +24,20 @@ The Flipper runs a custom FAP that broadcasts a BLE advertisement packet when yo
 ### ESP32
 
 1. Flash MicroPython to your ESP32 board
-2. Open `main.py` and fill in your WiFi credentials and NLE API key
+2. Open `main.py` and fill in the following at the top of the file:
+   - `WIFI_SSID` — your WiFi network name
+   - `WIFI_PASSWORD` — your WiFi password
+   - `NLE_API_KEY` — your NLE API key (starts with `nle_`)
+   - `DEVICE_ID` — your NLE device ID (36 characters, format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+   - `SERIAL` — your device serial number (16 characters, found on NLE dashboard)
 3. Save `main.py` to the device — it runs automatically on boot
 4. Plug into any USB charger
 
 ### Flipper
 
 1. Install [ufbt](https://github.com/flipperdevices/flipperzero-ufbt)
-2. Clone this repo
-3. Run `ufbt` in the project directory
+2. Download `nest_bridge.c` from this repo
+3. Run `ufbt` in the directory containing the file
 4. Copy `dist/nest_bridge.fap` to your Flipper SD card under `apps/`
 
 ## Packet Reference
