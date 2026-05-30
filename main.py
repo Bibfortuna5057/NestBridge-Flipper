@@ -6,11 +6,11 @@ import time
 from micropython import const
  
 # ── CONFIG ─────────────────────────────────────────────────────────────────────
-WIFI_SSID     = "Hen's Den"
-WIFI_PASSWORD = "Pinklighter985!"
-NLE_API_KEY   = "nle_917a78cdda96d34f1014f044e65d22471c5e8cca335a43d632a5f7fde664c9ea"
-DEVICE_ID     = "d3d6b58b-191d-4a9d-b5b8-e177a94d5a84"
-SERIAL        = "02AA01AC481400CF"
+WIFI_SSID     = " "
+WIFI_PASSWORD = " "
+NLE_API_KEY   = " "
+DEVICE_ID     = " "
+SERIAL        = " "
 NLE_BASE      = "https://nolongerevil.com/api/v1"
 # ───────────────────────────────────────────────────────────────────────────────
  
