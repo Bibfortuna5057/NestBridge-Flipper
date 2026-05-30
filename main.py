@@ -4,19 +4,19 @@ import urequests
 import json
 import time
 from micropython import const
-
+ 
 # ── CONFIG ─────────────────────────────────────────────────────────────────────
-WIFI_SSID     = "YOUR_WIFI_SSID"
-WIFI_PASSWORD = "YOUR_WIFI_PASSWORD"
-NLE_API_KEY   = "YOUR_API_KEY_HERE"
-DEVICE_ID     = "YOUR_DEVICE_ID_HERE"
-SERIAL        = "YOUR_DEVICE_SERIAL_HERE"
+WIFI_SSID     = "Hen's Den"
+WIFI_PASSWORD = "Pinklighter985!"
+NLE_API_KEY   = "nle_917a78cdda96d34f1014f044e65d22471c5e8cca335a43d632a5f7fde664c9ea"
+DEVICE_ID     = "d3d6b58b-191d-4a9d-b5b8-e177a94d5a84"
+SERIAL        = "02AA01AC481400CF"
 NLE_BASE      = "https://nolongerevil.com/api/v1"
 # ───────────────────────────────────────────────────────────────────────────────
-
+ 
 MFR_ID   = bytes([0xE5, 0x02])
 APP_MARK = bytes([ord('N'), ord('B')])
-
+ 
 CMD_IDLE      = 0x00
 CMD_SET_TEMP  = 0xF0
 CMD_MODE_HEAT = 0x04
@@ -32,7 +32,7 @@ CMD_FAN_4H    = 0xA5
 CMD_FAN_8H    = 0xA6
 CMD_FAN_12H   = 0xA7
 CMD_FAN_OFF   = 0xA8
-
+ 
 FAN_DURATIONS = {
     CMD_FAN_15:  900,
     CMD_FAN_30:  1800,
@@ -43,10 +43,10 @@ FAN_DURATIONS = {
     CMD_FAN_8H:  28800,
     CMD_FAN_12H: 43200,
 }
-
+ 
 _IRQ_SCAN_RESULT = const(5)
 _IRQ_SCAN_DONE   = const(6)
-
+ 
 # ── WIFI ───────────────────────────────────────────────────────────────────────
 def connect_wifi():
     wlan = network.WLAN(network.STA_IF)
@@ -63,16 +63,16 @@ def connect_wifi():
         return True
     print("WiFi failed")
     return False
-
+ 
 # ── HELPERS ────────────────────────────────────────────────────────────────────
 def c_to_f(c):
     return round(c * 9 / 5 + 32, 1)
-
+ 
 HEADERS = {
     "Authorization": NLE_API_KEY,
     "Content-Type": "application/json"
 }
-
+ 
 # ── NLE API ────────────────────────────────────────────────────────────────────
 def set_temperature(value_f):
     try:
@@ -88,7 +88,7 @@ def set_temperature(value_f):
         print(f"SET TEMP {value_f}F: {'OK' if data.get('success') else 'FAIL'}")
     except Exception as e:
         print(f"SET TEMP ERR: {e}")
-
+ 
 def set_mode(mode):
     try:
         body = json.dumps({"mode": mode})
@@ -98,8 +98,7 @@ def set_mode(mode):
         print(f"MODE {mode}: {'OK' if data.get('success') else 'FAIL'}")
     except Exception as e:
         print(f"MODE ERR: {e}")
-
-
+ 
 def set_fan_timer(duration_seconds):
     try:
         body = json.dumps({"mode": "on", "duration": duration_seconds})
@@ -109,7 +108,7 @@ def set_fan_timer(duration_seconds):
         print(f"FAN {duration_seconds//60}min: {'OK' if data.get('success') else 'FAIL'}")
     except Exception as e:
         print(f"FAN ERR: {e}")
-
+ 
 def set_fan_off():
     try:
         body = json.dumps({"mode": "off"})
@@ -119,7 +118,7 @@ def set_fan_off():
         print(f"FAN OFF: {'OK' if data.get('success') else 'FAIL'}")
     except Exception as e:
         print(f"FAN OFF ERR: {e}")
-
+ 
 # ── COMMAND HANDLER ────────────────────────────────────────────────────────────
 def handle_command(cmd, temp):
     print(f"CMD=0x{cmd:02X} temp={temp}")
@@ -137,11 +136,11 @@ def handle_command(cmd, temp):
         set_fan_off()
     elif cmd in FAN_DURATIONS:
         set_fan_timer(FAN_DURATIONS[cmd])
-
+ 
 # ── BLE SCANNER ────────────────────────────────────────────────────────────────
 last_cmd  = CMD_IDLE
 last_temp = 0
-
+ 
 def parse_adv(adv_data):
     i = 0
     while i < len(adv_data):
@@ -155,25 +154,29 @@ def parse_adv(adv_data):
                 return adv_data[i+6], adv_data[i+7] if length >= 7 else 0
         i += 1 + length
     return None, None
-
+ 
 ble = bluetooth.BLE()
 ble.active(True)
-
+ 
 def irq(event, data):
     global last_cmd, last_temp
     if event == _IRQ_SCAN_RESULT:
         addr_type, addr, adv_type, rssi, adv_data = data
         cmd, temp = parse_adv(adv_data)
-        if cmd is not None and cmd != CMD_IDLE:
-            if cmd != last_cmd or temp != last_temp:
+        if cmd is not None:
+            if cmd == CMD_IDLE:
+                # Broadcast ended - reset dedup so the same command can fire again
+                last_cmd = CMD_IDLE
+                last_temp = 0
+            elif cmd != last_cmd or temp != last_temp:
                 last_cmd  = cmd
                 last_temp = temp
                 handle_command(cmd, temp)
     elif event == _IRQ_SCAN_DONE:
         ble.gap_scan(0, 30000, 30000)
-
+ 
 ble.irq(irq)
-
+ 
 # ── MAIN ───────────────────────────────────────────────────────────────────────
 def main():
     connect_wifi()
@@ -181,5 +184,5 @@ def main():
     ble.gap_scan(0, 30000, 30000)
     while True:
         time.sleep(10)
-
+ 
 main()
